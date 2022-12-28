@@ -49,16 +49,23 @@ export default {
     };
   },
   created() {
-    if (localStorage.resultLogin || sessionStorage.resultLogin) {
+    if (
+      localStorage.resultLogin == undefined ||
+      sessionStorage.resultLogin == undefined
+    ) {
       this.$router.push("/MenuAcessos");
     }
   },
   methods: {
     async onLogin() {
       let resultado = await api.Autenticacao(this.password, this.login);
-      this.remember
-        ? (localStorage.resultLogin = JSON.stringify(resultado))
-        : (sessionStorage.resultLogin = JSON.stringify(resultado));
+      // this.remember
+      //   ? (localStorage.resultLogin = JSON.stringify(resultado))
+      //   : (sessionStorage.resultLogin = JSON.stringify(resultado));
+
+      localStorage.resultLogin = JSON.stringify(resultado);
+      sessionStorage.resultLogin = JSON.stringify(resultado);
+
       if (resultado.accessToken) {
         this.$q.notify({
           message: "Login feito com sucesso !",

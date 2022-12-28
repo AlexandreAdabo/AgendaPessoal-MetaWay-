@@ -25,7 +25,7 @@
         <div class="text-subtitle2">{{ text }}</div>
       </q-card-section>
     </q-card>
-    <q-card class="my-card col">
+    <q-card v-if="typeUser == 'ROLE_ADMIN'" class="my-card col">
       <q-img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
       </q-img>
       <q-card-section
@@ -93,7 +93,11 @@ export default {
   data() {
     return {
       text: "Clique para acessar",
+      typeUser: "",
     };
+  },
+  created() {
+    this.typeUser = JSON.parse(sessionStorage.resultLogin).tipos[0];
   },
   methods: {
     onClickCard(e) {

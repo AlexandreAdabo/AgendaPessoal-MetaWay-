@@ -15,7 +15,7 @@
     selection="single"
     v-model:selected="row_selected"
     @row-click="onRowClick($event, rows)"
-    no-data-label="Não existem contatos cadastrados"
+    no-data-label="Não existem pessoas cadastradas"
     no-results-label="Não encontramos resultados"
     row-key="id"
   >
@@ -48,21 +48,6 @@
     <template v-slot:loading>
       <q-inner-loading showing color="primary"></q-inner-loading>
     </template>
-    <template v-slot:body-cell-favoritos="props">
-      <q-td :props="props">
-        <div>
-          <q-checkbox
-            v-model="props.row.favoritos"
-            @update:model-value="
-              onFavoritos(JSON.parse(JSON.stringify(props.row)))
-            "
-            checked-icon="star"
-            unchecked-icon="star_border"
-            indeterminate-icon="star_border"
-          />
-        </div>
-      </q-td>
-    </template>
     <template v-slot:body-cell-deletar="props">
       <q-td :props="props">
         <div>
@@ -90,50 +75,64 @@ export default {
     return {
       filter: "",
       loading: false,
-      MostraFavoritos: false,
       row_selected: [],
-      lista_favoritos: [],
       columns: [
         {
           name: "nome",
           required: true,
           label: "Nome",
           align: "center",
-          field: (row) => row.pessoa.nome,
+          field: (row) => row.nome,
           sortable: true,
         },
         {
           name: "miniatura",
           align: "center",
-          label: "Miniatura",
-          field: (row) => row.pessoa.foto.name,
+          label: "Foto",
+          field: (row) => row.foto,
           sortable: true,
         },
-        {
-          name: "email",
-          label: "E-mail",
-          field: "email",
-          align: "center",
-          sortable: true,
-        },
-        { name: "tag", label: "Tag", field: "tag", sortable: true },
         {
           name: "cpf",
           label: "CPF",
           align: "center",
-          field: (row) => row.pessoa.cpf,
+          field: (row) => row.cpf,
           sortable: true,
         },
         {
-          name: "telefone",
-          label: "Telefone",
-          field: "telefone",
+          name: "logradouro",
+          label: "Logradouro",
+          field: (row) => row.endereco.logradouro,
           sortable: true,
         },
         {
-          name: "favoritos",
-          label: "Favoritos",
-          field: "favoritos",
+          name: "numero",
+          label: "Número",
+          field: (row) => row.endereco.numero,
+          sortable: true,
+        },
+        {
+          name: "bairro",
+          label: "Bairro",
+          field: (row) => row.endereco.bairro,
+          sortable: true,
+        },
+        {
+          name: "cidade",
+          label: "Cidade",
+          field: (row) => row.endereco.cidade,
+          sortable: true,
+        },
+        {
+          name: "CEP",
+          label: "CEP",
+          field: (row) => row.endereco.cep,
+          sortable: true,
+        },
+        {
+          name: "estado",
+          label: "Estado",
+          field: (row) => row.endereco.estado,
           sortable: true,
         },
         {
@@ -150,13 +149,11 @@ export default {
     BtnVoltar,
   },
   async created() {
-    let contatos = await api.ContatosList();
-    contatos.map((e, index) => {
-      contatos[index].favoritos = false;
-      contatos[index].delete = false;
+    let pessoas = await api.PessoaPesquisar();
+    pessoas.map((e, index) => {
+      pessoas[index].delete = false;
     });
-    this.rows = contatos;
-    console.log(contatos, "LISTA DE CONTATOS");
+    this.rows = pessoas;
   },
   methods: {
     Voltar() {
@@ -203,7 +200,6 @@ export default {
           password:
             "$2a$10$nFezmH.OppxvpqlroxkP9uERtLWbNyJiRKO/ronjn0AnFEZhqoKLu",
         },
-        favoritos: false,
       };
       let insertContact = await api.ContatosInsert(contato_vazio);
       this.$q.notify({
@@ -242,55 +238,11 @@ export default {
       });
       this.loading = false;
     },
-    async onFavoritos(e) {
-      if (e.favoritos) {
-        let insert_favorito = await api.FavoritosSalvar(e);
-        this.$q.notify({
-          message: insert_favorito.message || "Contato inserido em Favoritos",
-          color: "positive",
-          icon: "check",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, insert_favorito, "INSERE NOS FAVORITOS");
-      } else {
-        let delete_favorito = await api.FavoritosDelete(e.id);
-        this.$q.notify({
-          message: delete_favorito.message || "Contato deletado dos Favoritos",
-          color: "negative",
-          icon: "close",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, delete_favorito, "DELETA DOS FAVORITOS");
-      }
-    },
     async onFilter() {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
-      console.log(filtrado, "ESCREVEU");
     },
-    onRowClick(evt, row) {
-      console.log(
-        JSON.parse(JSON.stringify(this.row_selected)),
-        "ROW SELECTED",
-      );
-      console.log(JSON.parse(JSON.stringify(row)), "row");
-    },
+    onRowClick() {},
   },
 };
 </script>

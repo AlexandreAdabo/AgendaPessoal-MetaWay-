@@ -1,7 +1,168 @@
 <template>
   <div class="titulo">Home</div>
   <BtnVoltar />
-  <q-btn color="primary" label="Favoritos" @click="onClickFavoritos()" />
+  <q-btn
+    color="primary"
+    rounded
+    label="Favoritos"
+    @click="onClickFavoritos()"
+  />
+  <q-dialog v-model="FormNewContact" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold"
+          >Formulário de Novo Contato</span
+        >
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            type="email"
+            v-model="email"
+            label="E-mail"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="list"></q-icon>
+            </template>
+          </q-input>
+          <q-file
+            class="col margin_input"
+            v-model="miniatura"
+            label="Miniatura"
+          >
+            <template v-slot:prepend>
+              <q-icon name="content_copy"></q-icon>
+            </template>
+          </q-file>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="tag" label="Tag">
+            <template v-slot:prepend>
+              <q-icon name="bookmark"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="telefone"
+            mask="(##)#####-####"
+            label="Telefone"
+          >
+            <template v-slot:prepend>
+              <q-icon name="call"></q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewContact"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="rowEdit" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold">Editar Contato</span>
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            type="email"
+            v-model="email"
+            label="E-mail"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="list"></q-icon>
+            </template>
+          </q-input>
+          <q-file
+            class="col margin_input"
+            v-model="miniatura"
+            label="Miniatura"
+          >
+            <template v-slot:prepend>
+              <q-icon name="content_copy"></q-icon>
+            </template>
+          </q-file>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="tag" label="Tag">
+            <template v-slot:prepend>
+              <q-icon name="bookmark"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="telefone"
+            mask="(##)#####-####"
+            label="Telefone"
+          >
+            <template v-slot:prepend>
+              <q-icon name="call"></q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewContact"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   <Transition name="slide-fade">
     <div v-if="MostraFavoritos">
       <tr v-for="(a, index) in this.lista_favoritos.length" :key="index">
@@ -29,10 +190,6 @@
       </tr>
     </div>
   </Transition>
-  <!-- 
-    o Lista de contatos, diferenciando contatos normais, de contatos favoritos
-    o Deve ser possível pesquisar, remover, incluir, alterar e favoritar
-    o Deve exibir uma miniatura da foto do cadastro de pessoa -->
   <q-table
     class="botoes"
     card-class="bg-grey-4 text-black"
@@ -80,6 +237,17 @@
     <template v-slot:loading>
       <q-inner-loading showing color="primary"></q-inner-loading>
     </template>
+    <template v-slot:body-cell-miniatura="props">
+      <q-td :props="props">
+        <div>
+          <q-img
+            src="https://placeimg.com/500/300/nature"
+            spinner-color="white"
+            style="height: 80px; max-width: 70px"
+          ></q-img>
+        </div>
+      </q-td>
+    </template>
     <template v-slot:body-cell-favoritos="props">
       <q-td :props="props">
         <div>
@@ -123,6 +291,8 @@ export default {
       filter: "",
       loading: false,
       MostraFavoritos: false,
+      FormNewContact: false,
+      rowEdit: false,
       row_selected: [],
       lista_favoritos: [],
       columns: [
@@ -176,6 +346,12 @@ export default {
         },
       ],
       rows: [],
+      nome: "",
+      miniatura: "",
+      email: "",
+      tag: "",
+      cpf: "",
+      telefone: "",
     };
   },
   components: {
@@ -188,56 +364,53 @@ export default {
       contatos[index].delete = false;
     });
     this.rows = contatos;
-    console.log(contatos, "LISTA DE CONTATOS");
+    //let foto = await api.FotoGet(contatos[0].id);
   },
   methods: {
     Voltar() {
       this.$router.push("/MenuAcessos");
     },
-    async addRow() {
-      this.loading = true;
+    async onSaveNewContact() {
       //Envia a API
-      let contato_vazio = {
+      let contato_obj = {
+        email: this.email,
         id: this.rows.length,
         pessoa: {
-          id: this.rows.length,
-          nome: "",
-          cpf: "",
+          cpf: this.cpf,
           endereco: {
-            id: 1,
-            logradouro: "",
-            numero: 752,
-            cep: "",
             bairro: "",
+            cep: "",
             cidade: "",
             estado: "",
+            id: this.rows.length,
+            logradouro: "",
+            numero: 0,
             pais: "",
           },
           foto: {
-            id: "eb8f1718-50ef-41dd-ab4a-0f3e2292b196",
-            name: "foto.png",
-            type: "image/png",
+            id: this.miniatura.lastModified,
+            name: this.miniatura.name,
+            type: this.miniatura.type,
           },
+          id: this.rows.length,
+          nome: this.nome,
         },
-        tag: "",
-        email: null,
-        telefone: "",
-        tipoContato: "",
-        privado: false,
+        privado: true,
+        tag: this.tag,
+        telefone: this.telefone,
+        tipoContato: "CELULAR",
         usuario: {
-          id: 1,
-          nome: "Administrador",
-          dataNascimento: "1986-12-03",
           cpf: "380.854.570-40",
+          dataNascimento: "1986-12-03",
           email: "suporte@metaway.com.br",
-          telefone: "(54) 3055-2577",
+          id: 2,
+          nome: "Administrador",
+          password: "12345678",
+          telefone: "(54)30552-577",
           username: "admin",
-          password:
-            "$2a$10$nFezmH.OppxvpqlroxkP9uERtLWbNyJiRKO/ronjn0AnFEZhqoKLu",
         },
-        favoritos: false,
       };
-      let insertContact = await api.ContatosInsert(contato_vazio);
+      let insertContact = await api.ContatosInsert(contato_obj);
       this.$q.notify({
         message: insertContact.message || "Não foi possível inserir o contato",
         color: "positive",
@@ -252,6 +425,16 @@ export default {
           },
         ],
       });
+    },
+    async addRow() {
+      this.loading = true;
+      this.nome = "";
+      this.email = "";
+      this.cpf = "";
+      this.miniatura = "";
+      this.tag = "";
+      this.telefone = "";
+      this.FormNewContact = true;
       this.loading = false;
     },
     async DeleteRow(e) {
@@ -291,7 +474,6 @@ export default {
             },
           ],
         });
-        console.log(e, insert_favorito, "INSERE NOS FAVORITOS");
       } else {
         let delete_favorito = await api.FavoritosDelete(e.id);
         this.$q.notify({
@@ -308,26 +490,33 @@ export default {
             },
           ],
         });
-        console.log(e, delete_favorito, "DELETA DOS FAVORITOS");
       }
     },
     async onFilter() {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
-      console.log(filtrado, "ESCREVEU");
     },
     async onClickFavoritos() {
       this.lista_favoritos = await api.FavoritosGet();
       this.lista_favoritos = JSON.parse(JSON.stringify(this.lista_favoritos));
-      console.log(this.lista_favoritos, "LISTA DE FAVORITOS");
       this.MostraFavoritos = !this.MostraFavoritos;
     },
-    onRowClick(evt, row) {
-      console.log(
-        JSON.parse(JSON.stringify(this.row_selected)),
-        "ROW SELECTED",
-      );
-      console.log(JSON.parse(JSON.stringify(row)), "row");
+    onRowClick() {
+      if (JSON.parse(JSON.stringify(this.row_selected)).length > 0) {
+        this.nome = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].pessoa.nome;
+        this.email = JSON.parse(JSON.stringify(this.row_selected))[0].email;
+        this.cpf = JSON.parse(JSON.stringify(this.row_selected))[0].pessoa.cpf;
+        this.miniatura = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].pessoa.foto.name;
+        this.tag = JSON.parse(JSON.stringify(this.row_selected))[0].tag;
+        this.telefone = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].telefone;
+        this.rowEdit = true;
+      }
     },
   },
 };

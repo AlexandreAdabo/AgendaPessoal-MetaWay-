@@ -141,6 +141,29 @@ const funcoes_api = {
     response = await response.json();
     return response;
   },
+  async FotoGet(foto_id) {
+    //GET
+    let bearerAuth =
+      JSON.parse(sessionStorage.resultLogin).accessToken ||
+      JSON.parse(sessionStorage.resultLogin).accessToken;
+    let url = `${base_url}api/foto/download/${foto_id}`;
+    let response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${bearerAuth}`,
+        "Content-type": "application/json",
+      },
+    });
+    response = await response.blob();
+    //const fr = new FileReader();
+    //fr.readAsDataURL(response);
+    // fr.addEventListener("load", () => {
+    //   let foto = JSON.parse(localStorage.photos);
+    //   foto.push({ photo: fr.result, id: foto_id });
+    //   localStorage.photos = JSON.stringify(foto);
+    // });
+    return response;
+  },
   async UsuarioGet(usuario_id) {
     //GET
     let bearerAuth =
@@ -162,7 +185,7 @@ const funcoes_api = {
     let bearerAuth =
       JSON.parse(sessionStorage.resultLogin).accessToken ||
       JSON.parse(sessionStorage.resultLogin).accessToken;
-    let MyBody = JSON.stringify({"termo": ""});
+    let MyBody = JSON.stringify({ termo: "" });
     let url = `${base_url}api/usuario/pesquisar`;
     let response = await fetch(url, {
       method: "POST",
@@ -202,6 +225,24 @@ const funcoes_api = {
     let url = `${base_url}api/usuario/atualizar`;
     let response = await fetch(url, {
       method: "PUT",
+      body: MyBody,
+      headers: {
+        Authorization: `Bearer ${bearerAuth}`,
+        "Content-type": "application/json",
+      },
+    });
+    response = await response.json();
+    return response;
+  },
+  async PessoaPesquisar() {
+    //POST
+    let bearerAuth =
+      JSON.parse(sessionStorage.resultLogin).accessToken ||
+      JSON.parse(sessionStorage.resultLogin).accessToken;
+    let MyBody = JSON.stringify({ nome: "" });
+    let url = `${base_url}api/pessoa/pesquisar`;
+    let response = await fetch(url, {
+      method: "POST",
       body: MyBody,
       headers: {
         Authorization: `Bearer ${bearerAuth}`,

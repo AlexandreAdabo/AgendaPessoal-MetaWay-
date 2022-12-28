@@ -1,6 +1,104 @@
 <template>
   <div class="titulo">Usuários</div>
   <BtnVoltar />
+  <q-dialog v-model="rowEdit" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold">Editar Usuário</span>
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="face"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="dt_nascimento"
+            mask="##/##/####"
+            label="Data de Nascimento"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            type="email"
+            v-model="email"
+            label="E-mail"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="username" label="Username">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="senha"
+            type="password"
+            label="Senha"
+            hint="A senha deve ter pelo menos 8 caracteres, com letras e números"
+          >
+            <template v-slot:prepend>
+              <q-icon name="password"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="(##)#####-####"
+            v-model="telefone"
+            label="Telefone"
+          >
+            <template v-slot:prepend>
+              <q-icon name="smartphone"></q-icon>
+            </template>
+          </q-input>
+          <q-toggle
+            class="col margin_input"
+            v-model="ic_admin"
+            true-value="ROLE_ADMIN"
+            false-value="ROLE_USER"
+            label="Administrador"
+          />
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewUser"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   <q-dialog v-model="FormNewUser" persistent>
     <q-card>
       <q-card-section class="row items-center">
@@ -12,19 +110,80 @@
 
       <q-card-section class="row items-center">
         <div class="row">
-          <q-input class="col botoes" v-model="text" label="CPF" />
           <q-input
-            class="col botoes"
-            v-model="text"
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="face"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="dt_nascimento"
+            mask="##/##/####"
             label="Data de Nascimento"
-          />
-          <q-input class="col botoes" v-model="text" label="E-mail" />
+          >
+            <template v-slot:prepend>
+              <q-icon name="event"></q-icon>
+            </template>
+          </q-input>
         </div>
         <div class="row">
-          <q-input class="col botoes" v-model="text" label="Nome" />
-          <q-input class="col botoes" v-model="text" label="Senha" />
-          <q-input class="col botoes" v-model="text" label="Telefone" />
-          <q-input class="col botoes" v-model="text" label="Username" />
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            type="email"
+            v-model="email"
+            label="E-mail"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="username" label="Username">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="senha"
+            type="password"
+            label="Senha"
+            hint="A senha deve ter pelo menos 8 caracteres, com letras e números"
+          >
+            <template v-slot:prepend>
+              <q-icon name="password"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="(##)#####-####"
+            v-model="telefone"
+            label="Telefone"
+          >
+            <template v-slot:prepend>
+              <q-icon name="smartphone"></q-icon>
+            </template>
+          </q-input>
+          <q-toggle
+            class="col margin_input"
+            v-model="ic_admin"
+            true-value="ROLE_ADMIN"
+            false-value="ROLE_USER"
+            label="Administrador"
+          />
         </div>
       </q-card-section>
 
@@ -34,7 +193,7 @@
           rounded
           label="Salvar"
           color="green"
-          v-close-popup="cancelEnabled"
+          @click="onSaveNewUser"
         ></q-btn>
         <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
       </q-card-actions>
@@ -87,21 +246,6 @@
     <template v-slot:loading>
       <q-inner-loading showing color="primary"></q-inner-loading>
     </template>
-    <template v-slot:body-cell-favoritos="props">
-      <q-td :props="props">
-        <div>
-          <q-checkbox
-            v-model="props.row.favoritos"
-            @update:model-value="
-              onFavoritos(JSON.parse(JSON.stringify(props.row)))
-            "
-            checked-icon="star"
-            unchecked-icon="star_border"
-            indeterminate-icon="star_border"
-          />
-        </div>
-      </q-td>
-    </template>
     <template v-slot:body-cell-deletar="props">
       <q-td :props="props">
         <div>
@@ -122,6 +266,7 @@
 <script>
 import BtnVoltar from "@/components/BtnVoltar.vue";
 import api from "../api";
+import functionJS from "../function";
 
 export default {
   name: "AppUsuarios",
@@ -130,8 +275,8 @@ export default {
       filter: "",
       loading: false,
       FormNewUser: false,
+      rowEdit: false,
       row_selected: [],
-      lista_favoritos: [],
       columns: [
         {
           name: "nome",
@@ -175,6 +320,14 @@ export default {
         },
       ],
       rows: [],
+      nome: "",
+      senha: "",
+      cpf: "",
+      dt_nascimento: "",
+      email: "",
+      telefone: "",
+      username: "",
+      ic_admin: "ROLE_USER",
     };
   },
   components: {
@@ -182,36 +335,200 @@ export default {
   },
   async created() {
     let usuarios = await api.UsuarioList();
-    // usuarios.map((e, index) => {
-    //   usuarios[index].delete = false;
-    // });
+    usuarios.map((e, index) => {
+      usuarios[index].delete = false;
+    });
     this.rows = usuarios;
-    console.log(usuarios, "LISTA DE usuarios");
   },
   methods: {
     Voltar() {
       this.$router.push("/MenuAcessos");
     },
+    async onSaveNewUser() {
+      //Validações
+      if (this.senha.length < 7) {
+        this.$q.notify({
+          message: "A senha deve ter no mínimo 8 dígitos",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      var validacaoSenha = /^(?=.*\d)(?=.*[a-z])(?=.*[0-9]).{8,20}$/;
+      var resultadoValidacao = validacaoSenha.test(this.senha);
+      if (!resultadoValidacao) {
+        this.$q.notify({
+          message: "A senha deve ter no mínimo uma letra e um número",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      if (this.cpf.length != 14) {
+        this.$q.notify({
+          message: "O CPF não foi digitado completamente",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      if (this.telefone.length != 14) {
+        this.$q.notify({
+          message: "O Telefone não foi digitado completamente",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      if (!this.email.includes("@")) {
+        this.$q.notify({
+          message: "O E-mail não foi digitado corretamente",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      var dia = this.dt_nascimento.substring(0, 2);
+      var mes = this.dt_nascimento.substring(3, 5);
+      var ano = this.dt_nascimento.substring(6, 10);
+      if (dia > 31) {
+        this.$q.notify({
+          message: "O dia digitado é inválido",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      if (mes > 12) {
+        this.$q.notify({
+          message: "O Mês digitado é inválido",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      if (ano < 1900) {
+        this.$q.notify({
+          message: "O Ano digitado é inválido",
+          color: "negative",
+          icon: "close",
+          actions: [
+            {
+              label: "Fechar",
+              color: "white",
+              handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+        return;
+      }
+      this.dt_nascimento = await functionJS.formataDataAPI(this.dt_nascimento);
+      let newUser = {
+        tipos: [this.ic_admin],
+        usuario: {
+          cpf: this.cpf,
+          dataNascimento: this.dt_nascimento,
+          email: this.email,
+          id: this.rows.length,
+          nome: this.nome,
+          password: this.senha,
+          telefone: this.telefone,
+          username: this.username,
+        },
+      };
+      let insertUser = await api.UsuarioInsert(newUser);
+      this.$q.notify({
+        message: insertUser.message || "Não foi possível inserir o Usuário",
+        color: "positive",
+        icon: "check",
+        actions: [
+          {
+            label: "Fechar",
+            color: "white",
+            handler: () => {
+              /* ... */
+            },
+          },
+        ],
+      });
+      this.FormNewUser = false;
+    },
     async addRow() {
       this.loading = true;
       //Envia a API
+      this.nome = "";
+      this.senha = "";
+      this.cpf = "";
+      this.dt_nascimento = "";
+      this.email = "";
+      this.telefone = "";
+      this.username = "";
       this.FormNewUser = true;
-      //let insertUser = await api.UsuarioInsert();
-
-      // this.$q.notify({
-      //   message: insertUser.message || "Não foi possível inserir o Usuário",
-      //   color: "positive",
-      //   icon: "check",
-      //   actions: [
-      //     {
-      //       label: "Fechar",
-      //       color: "white",
-      //       handler: () => {
-      //         /* ... */
-      //       },
-      //     },
-      //   ],
-      // });
       this.loading = false;
     },
     async DeleteRow(e) {
@@ -234,54 +551,24 @@ export default {
       });
       this.loading = false;
     },
-    async onFavoritos(e) {
-      if (e.favoritos) {
-        let insert_favorito = await api.FavoritosSalvar(e);
-        this.$q.notify({
-          message: insert_favorito.message || "Contato inserido em Favoritos",
-          color: "positive",
-          icon: "check",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, insert_favorito, "INSERE NOS FAVORITOS");
-      } else {
-        let delete_favorito = await api.FavoritosDelete(e.id);
-        this.$q.notify({
-          message: delete_favorito.message || "Contato deletado dos Favoritos",
-          color: "negative",
-          icon: "close",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, delete_favorito, "DELETA DOS FAVORITOS");
-      }
-    },
     async onFilter() {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
-      console.log(filtrado, "ESCREVEU");
     },
-    onRowClick(evt, row) {
-      console.log(
-        JSON.parse(JSON.stringify(this.row_selected)),
-        "ROW SELECTED",
-      );
-      console.log(JSON.parse(JSON.stringify(row)), "row");
+    async onRowClick() {
+      if (JSON.parse(JSON.stringify(this.row_selected)).length > 0) {
+        this.nome = JSON.parse(JSON.stringify(this.row_selected))[0].nome;
+        this.email = JSON.parse(JSON.stringify(this.row_selected))[0].email;
+        this.cpf = JSON.parse(JSON.stringify(this.row_selected))[0].cpf;
+        this.dt_nascimento = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].dataNascimento;
+        this.dt_nascimento = await functionJS.formataData(this.dt_nascimento);
+        this.telefone = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].telefone;
+        this.rowEdit = true;
+      }
     },
   },
 };
@@ -296,6 +583,9 @@ export default {
   justify-content: center;
 }
 .botoes {
+  margin: 1% 1%;
+}
+.margin_input {
   margin: 1% 1%;
 }
 </style>

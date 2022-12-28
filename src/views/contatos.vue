@@ -48,21 +48,6 @@
     <template v-slot:loading>
       <q-inner-loading showing color="primary"></q-inner-loading>
     </template>
-    <template v-slot:body-cell-favoritos="props">
-      <q-td :props="props">
-        <div>
-          <q-checkbox
-            v-model="props.row.favoritos"
-            @update:model-value="
-              onFavoritos(JSON.parse(JSON.stringify(props.row)))
-            "
-            checked-icon="star"
-            unchecked-icon="star_border"
-            indeterminate-icon="star_border"
-          />
-        </div>
-      </q-td>
-    </template>
     <template v-slot:body-cell-deletar="props">
       <q-td :props="props">
         <div>
@@ -90,9 +75,7 @@ export default {
     return {
       filter: "",
       loading: false,
-      MostraFavoritos: false,
       row_selected: [],
-      lista_favoritos: [],
       columns: [
         {
           name: "nome",
@@ -124,12 +107,6 @@ export default {
           sortable: true,
         },
         {
-          name: "favoritos",
-          label: "Favoritos",
-          field: "favoritos",
-          sortable: true,
-        },
-        {
           name: "deletar",
           label: "Deletar",
           field: "deletar",
@@ -145,11 +122,9 @@ export default {
   async created() {
     let contatos = await api.ContatosList();
     contatos.map((e, index) => {
-      contatos[index].favoritos = false;
       contatos[index].delete = false;
     });
     this.rows = contatos;
-    console.log(contatos, "LISTA DE CONTATOS");
   },
   methods: {
     Voltar() {
@@ -196,7 +171,6 @@ export default {
           password:
             "$2a$10$nFezmH.OppxvpqlroxkP9uERtLWbNyJiRKO/ronjn0AnFEZhqoKLu",
         },
-        favoritos: false,
       };
       let insertContact = await api.ContatosInsert(contato_vazio);
       this.$q.notify({
@@ -235,54 +209,11 @@ export default {
       });
       this.loading = false;
     },
-    async onFavoritos(e) {
-      if (e.favoritos) {
-        let insert_favorito = await api.FavoritosSalvar(e);
-        this.$q.notify({
-          message: insert_favorito.message || "Contato inserido em Favoritos",
-          color: "positive",
-          icon: "check",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, insert_favorito, "INSERE NOS FAVORITOS");
-      } else {
-        let delete_favorito = await api.FavoritosDelete(e.id);
-        this.$q.notify({
-          message: delete_favorito.message || "Contato deletado dos Favoritos",
-          color: "negative",
-          icon: "close",
-          actions: [
-            {
-              label: "Fechar",
-              color: "white",
-              handler: () => {
-                /* ... */
-              },
-            },
-          ],
-        });
-        console.log(e, delete_favorito, "DELETA DOS FAVORITOS");
-      }
-    },
     async onFilter() {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
-      console.log(filtrado, "ESCREVEU");
     },
-    onRowClick(evt, row) {
-      console.log(
-        JSON.parse(JSON.stringify(this.row_selected)),
-        "ROW SELECTED",
-      );
-      console.log(JSON.parse(JSON.stringify(row)), "row");
+    onRowClick() {
     },
   },
 };
