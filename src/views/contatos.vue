@@ -1,6 +1,76 @@
 <template>
   <div class="titulo">Contatos</div>
   <BtnVoltar />
+  <q-dialog v-model="FormNewContact" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold"
+          >Formulário de Novo Contato</span
+        >
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            type="email"
+            v-model="email"
+            label="E-mail"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="tag" label="Tag">
+            <template v-slot:prepend>
+              <q-icon name="bookmark"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="telefone"
+            mask="(##)#####-####"
+            label="Telefone"
+          >
+            <template v-slot:prepend>
+              <q-icon name="call"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="list"></q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewContact"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   <q-table
     class="botoes"
     card-class="bg-grey-4 text-black"
@@ -75,6 +145,7 @@ export default {
     return {
       filter: "",
       loading: false,
+      FormNewContact: false,
       row_selected: [],
       columns: [
         {
@@ -114,6 +185,11 @@ export default {
         },
       ],
       rows: [],
+      nome: "",
+      email: "",
+      tag: "",
+      cpf: "",
+      telefone: "",
     };
   },
   components: {
@@ -133,46 +209,55 @@ export default {
     async addRow() {
       this.loading = true;
       //Envia a API
-      let contato_vazio = {
-        id: this.rows.length,
+      this.nome = "";
+      this.email = "";
+      this.tag = "";
+      this.cpf = "";
+      this.telefone = "";
+      this.FormNewContact = true;
+      this.loading = false;
+    },
+    async onSaveNewContact() {
+      //Envia a API
+      let contato_obj = {
+        email: this.email,
+        id: parseFloat(this.rows.length),
         pessoa: {
-          id: this.rows.length,
-          nome: "",
-          cpf: "",
+          cpf: this.cpf,
           endereco: {
-            id: 1,
-            logradouro: "",
-            numero: 752,
-            cep: "",
             bairro: "",
+            cep: "",
             cidade: "",
             estado: "",
+            id: parseFloat(this.rows.length),
+            logradouro: "",
+            numero: 0,
             pais: "",
           },
           foto: {
-            id: "eb8f1718-50ef-41dd-ab4a-0f3e2292b196",
-            name: "foto.png",
-            type: "image/png",
+            id: "",
+            name: "",
+            type: "",
           },
+          id: parseFloat(this.rows.length),
+          nome: this.nome,
         },
-        tag: "",
-        email: null,
-        telefone: "",
-        tipoContato: "",
-        privado: false,
+        privado: true,
+        tag: this.tag,
+        telefone: this.telefone,
+        tipoContato: "CELULAR",
         usuario: {
+          cpf: "380.854.570-40",
+          dataNascimento: "1986-12-03",
+          email: "suporte@metaway.com.br",
           id: 1,
           nome: "Administrador",
-          dataNascimento: "1986-12-03",
-          cpf: "380.854.570-40",
-          email: "suporte@metaway.com.br",
-          telefone: "(54) 3055-2577",
+          password: "12345678",
+          telefone: "(54)30552-577",
           username: "admin",
-          password:
-            "$2a$10$nFezmH.OppxvpqlroxkP9uERtLWbNyJiRKO/ronjn0AnFEZhqoKLu",
         },
       };
-      let insertContact = await api.ContatosInsert(contato_vazio);
+      let insertContact = await api.ContatosInsert(contato_obj);
       this.$q.notify({
         message: insertContact.message || "Não foi possível inserir o contato",
         color: "positive",
@@ -187,7 +272,6 @@ export default {
           },
         ],
       });
-      this.loading = false;
     },
     async DeleteRow(e) {
       this.loading = true;
@@ -213,8 +297,7 @@ export default {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
     },
-    onRowClick() {
-    },
+    onRowClick() {},
   },
 };
 </script>
@@ -228,6 +311,9 @@ export default {
   justify-content: center;
 }
 .botoes {
+  margin: 1% 1%;
+}
+.margin_input {
   margin: 1% 1%;
 }
 </style>

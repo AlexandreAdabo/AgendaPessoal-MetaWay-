@@ -252,6 +252,40 @@ const funcoes_api = {
     response = await response.json();
     return response;
   },
+  async PessoaSalvar(pessoa_obj) {
+    //POST
+    let bearerAuth =
+      JSON.parse(sessionStorage.resultLogin).accessToken ||
+      JSON.parse(sessionStorage.resultLogin).accessToken;
+    let MyBody = JSON.stringify(pessoa_obj);
+    let url = `${base_url}api/pessoa/salvar`;
+    let response = await fetch(url, {
+      method: "POST",
+      body: MyBody,
+      headers: {
+        Authorization: `Bearer ${bearerAuth}`,
+        "Content-type": "application/json",
+      },
+    });
+    response = await response.json();
+    return response;
+  },
+  async PessoaDeletar(pessoa_id) {
+    //DELETE
+    let bearerAuth =
+      JSON.parse(sessionStorage.resultLogin).accessToken ||
+      JSON.parse(sessionStorage.resultLogin).accessToken;
+    let url = `${base_url}api/pessoa/remover/${pessoa_id}`;
+    let response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${bearerAuth}`,
+        "Content-type": "application/json",
+      },
+    });
+    response = await response.json();
+    return response;
+  },
 };
 
 module.exports = funcoes_api;

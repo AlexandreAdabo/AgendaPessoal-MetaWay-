@@ -1,6 +1,202 @@
 <template>
   <div class="titulo">Pessoas</div>
   <BtnVoltar />
+  <q-dialog v-model="FormNewPerson" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold"
+          >Formulário de Nova Pessoa</span
+        >
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+
+          <q-file class="col margin_input" v-model="foto" label="Foto">
+            <template v-slot:prepend>
+              <q-icon name="image"></q-icon>
+            </template>
+          </q-file>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="face"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="logradouro"
+            label="Logradouro"
+          >
+            <template v-slot:prepend>
+              <q-icon name="house"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            v-model="numero"
+            type="number"
+            label="Número"
+          >
+            <template v-slot:prepend>
+              <q-icon name="pin"></q-icon>
+            </template>
+          </q-input>
+          <q-input class="col margin_input" v-model="bairro" label="Bairro">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="cidade" label="Cidade">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="cep"
+            mask="#####-###"
+            label="CEP"
+          >
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="estado" label="Estado">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewPerson"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="rowEdit" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="person" color="primary" text-color="white"></q-avatar>
+        <span class="q-ml-sm" style="font-weight: bold">Editar Pessoa</span>
+      </q-card-section>
+
+      <q-card-section class="row items-center">
+        <div class="row">
+          <q-input class="col margin_input" v-model="nome" label="Nome">
+            <template v-slot:prepend>
+              <q-icon name="person"></q-icon>
+            </template>
+          </q-input>
+
+          <q-file class="col margin_input" v-model="foto" label="Foto">
+            <template v-slot:prepend>
+              <q-icon name="image"></q-icon>
+            </template>
+          </q-file>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            mask="###.###.###-##"
+            v-model="cpf"
+            label="CPF"
+          >
+            <template v-slot:prepend>
+              <q-icon name="face"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="logradouro"
+            label="Logradouro"
+          >
+            <template v-slot:prepend>
+              <q-icon name="house"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            class="col margin_input"
+            v-model="numero"
+            type="number"
+            label="Número"
+          >
+            <template v-slot:prepend>
+              <q-icon name="pin"></q-icon>
+            </template>
+          </q-input>
+          <q-input class="col margin_input" v-model="bairro" label="Bairro">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="cidade" label="Cidade">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+          <q-input
+            class="col margin_input"
+            v-model="cep"
+            mask="#####-###"
+            label="CEP"
+          >
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input class="col margin_input" v-model="estado" label="Estado">
+            <template v-slot:prepend>
+              <q-icon name="apartment"></q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
+
+      <!-- Notice v-close-popup -->
+      <q-card-actions align="right">
+        <q-btn
+          rounded
+          label="Salvar"
+          color="green"
+          @click="onSaveNewPerson"
+        ></q-btn>
+        <q-btn rounded label="Cancelar" color="negative" v-close-popup></q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   <q-table
     class="botoes"
     card-class="bg-grey-4 text-black"
@@ -75,6 +271,8 @@ export default {
     return {
       filter: "",
       loading: false,
+      FormNewPerson: false,
+      rowEdit: false,
       row_selected: [],
       columns: [
         {
@@ -143,6 +341,15 @@ export default {
         },
       ],
       rows: [],
+      nome: "",
+      foto: "",
+      cpf: "",
+      logradouro: "",
+      numero: "",
+      bairro: "",
+      cidade: "",
+      cep: "",
+      estado: "",
     };
   },
   components: {
@@ -159,51 +366,31 @@ export default {
     Voltar() {
       this.$router.push("/MenuAcessos");
     },
-    async addRow() {
-      this.loading = true;
-      //Envia a API
-      let contato_vazio = {
-        id: this.rows.length,
-        pessoa: {
+    async onSaveNewPerson() {
+      //Chamada da API
+      let pessoa_obj = {
+        cpf: this.cpf,
+        endereco: {
+          bairro: this.bairro,
+          cep: this.cep,
+          cidade: this.cidade,
+          estado: this.estado,
           id: this.rows.length,
-          nome: "",
-          cpf: "",
-          endereco: {
-            id: 1,
-            logradouro: "",
-            numero: 752,
-            cep: "",
-            bairro: "",
-            cidade: "",
-            estado: "",
-            pais: "",
-          },
-          foto: {
-            id: "eb8f1718-50ef-41dd-ab4a-0f3e2292b196",
-            name: "foto.png",
-            type: "image/png",
-          },
+          logradouro: this.logradouro,
+          numero: this.numero,
+          pais: "Brasil",
         },
-        tag: "",
-        email: null,
-        telefone: "",
-        tipoContato: "",
-        privado: false,
-        usuario: {
-          id: 1,
-          nome: "Administrador",
-          dataNascimento: "1986-12-03",
-          cpf: "380.854.570-40",
-          email: "suporte@metaway.com.br",
-          telefone: "(54) 3055-2577",
-          username: "admin",
-          password:
-            "$2a$10$nFezmH.OppxvpqlroxkP9uERtLWbNyJiRKO/ronjn0AnFEZhqoKLu",
+        foto: {
+          id: this.foto.lastModified,
+          name: this.foto.name,
+          type: this.foto.type,
         },
+        id: this.rows.length,
+        nome: this.nome,
       };
-      let insertContact = await api.ContatosInsert(contato_vazio);
+      let SaveContact = await api.PessoaSalvar(pessoa_obj);
       this.$q.notify({
-        message: insertContact.message || "Não foi possível inserir o contato",
+        message: SaveContact.message || "Contato Salvo",
         color: "positive",
         icon: "check",
         actions: [
@@ -216,12 +403,26 @@ export default {
           },
         ],
       });
+    },
+    async addRow() {
+      this.loading = true;
+      //Envia a API
+      this.nome = "";
+      this.foto = "";
+      this.cpf = "";
+      this.logradouro = "";
+      this.numero = "";
+      this.bairro = "";
+      this.cidade = "";
+      this.cep = "";
+      this.estado = "";
+      this.FormNewPerson = true;
       this.loading = false;
     },
     async DeleteRow(e) {
       this.loading = true;
       //Envia a API
-      let deleteContact = await api.ContatosDelete(e);
+      let deleteContact = await api.PessoaDeletar(e);
       this.$q.notify({
         message: deleteContact.message || "Contato deletado",
         color: "positive",
@@ -242,7 +443,32 @@ export default {
       let filtrado = await api.ContatosSearch(this.filter);
       this.rows = filtrado;
     },
-    onRowClick() {},
+    async onRowClick() {
+      if (JSON.parse(JSON.stringify(this.row_selected)).length > 0) {
+        this.nome = JSON.parse(JSON.stringify(this.row_selected))[0].nome;
+        this.foto = JSON.parse(JSON.stringify(this.row_selected))[0].foto;
+        this.cpf = JSON.parse(JSON.stringify(this.row_selected))[0].cpf;
+        this.bairro = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.bairro;
+        this.cidade = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.cidade;
+        this.cep = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.cep;
+        this.estado = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.estado;
+        this.logradouro = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.logradouro;
+        this.numero = JSON.parse(
+          JSON.stringify(this.row_selected),
+        )[0].endereco.numero;
+        this.rowEdit = true;
+      }
+    },
   },
 };
 </script>
@@ -256,6 +482,9 @@ export default {
   justify-content: center;
 }
 .botoes {
+  margin: 1% 1%;
+}
+.margin_input {
   margin: 1% 1%;
 }
 </style>
